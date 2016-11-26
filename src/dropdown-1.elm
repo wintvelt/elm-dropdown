@@ -22,7 +22,6 @@ type alias Model =
 
 -- simple types so we can read the code better
 type alias Fruit = String
-type alias DomID = String
 
 -- global constants/ config
 assortment : List String
