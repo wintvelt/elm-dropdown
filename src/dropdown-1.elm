@@ -18,7 +18,6 @@ main =
 -- our main model, which will change as we use the app
 type alias Model =
     { pickedFruit : Maybe Fruit
-    , focusedId : Maybe DomID
     }
 
 -- simple types so we can read the code better
@@ -40,7 +39,6 @@ assortment =
 init : ( Model, Cmd Msg )
 init =
     { pickedFruit = Nothing
-    , focusedId = Nothing
     } ! []
 
 
@@ -50,7 +48,6 @@ init =
 
 type Msg
     = FruitPicked Fruit
-    | Focused DomID
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -58,9 +55,6 @@ update msg model =
   case msg of
     FruitPicked fruit ->
       { model | pickedFruit = Just fruit } ! []
-
-    Focused domID ->
-      model ! []
 
 
 
