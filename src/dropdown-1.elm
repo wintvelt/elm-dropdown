@@ -1,6 +1,8 @@
+{- Part 1, a simple picklist
+-}
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on)
+import Html.Events exposing (onClick)
 
 main =
   Html.program
@@ -39,7 +41,7 @@ init : ( Model, Cmd Msg )
 init =
     { pickedFruit = Nothing
     , focusedId = Nothing
-    }
+    } ! []
 
 
 
@@ -55,7 +57,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
     FruitPicked fruit ->
-      { model | pickedFruit = fruit } ! []
+      { model | pickedFruit = Just fruit } ! []
 
     Focused domID ->
       model ! []
@@ -77,5 +79,20 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ p [] [ text <| toString model.fruit ++ " ▾"] ]
+    let
+        itemText =
+            model.pickedFruit
+            |> Maybe.withDefault "-- pick a fruit --" 
+            |> flip String.append " ▾"
+
+    in
+        div []
+            [ p [] [ text <| itemText ] 
+            , ul []
+                (List.map viewFruit assortment)
+            ]
+
+viewFruit : Fruit -> Html Msg
+viewFruit fruit =
+    li [ onClick <| FruitPicked fruit ]
+        [ text fruit ]
