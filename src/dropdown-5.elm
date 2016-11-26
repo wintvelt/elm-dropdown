@@ -1,11 +1,13 @@
 {- Part 5, a simple dropdown with focus
 and subscription to Mouse.clicks to close the dropdown
-with some additional styling
+with some additional styling, imported from separate module
 -}
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Mouse exposing (Position)
+
+import Styles
 
 main =
   Html.program
@@ -37,45 +39,6 @@ assortment =
     , "Durian"
     , "Elderberry"
     ]
-
-
--- styles for main container
-mainContainerStyles : List (String, String)
-mainContainerStyles =
-    [ ("position","relative")
-    , ("margin","16px")
-    , ("width", "200px")
-    , ("display", "inline-block")
-    ]
-
--- styles for main input field
-mainStyles : List (String, String)
-mainStyles =
-    [ ("padding","7px 0 6px 16px")
-    , ("width", "200px")
-    , ("margin","0")
-    ]
-
--- styles for list container
-menuStyles : List (String, String)
-menuStyles =
-    [ ("position", "absolute")
-    , ("top", "0")
-    , ("border-radius","4px")
-    , ("box-shadow", "0 1px 2px rgba(0,0,0,.24)")
-    , ("padding", "4px 8px")
-    , ("margin", "0")
-    , ("width", "200px")
-    , ("background-color", "white")
-    ]
-
--- styles for list items
-itemStyles : List (String, String)
-itemStyles =
-    [ ("display", "block")
-    , ("padding","4px 8px")
-    ]
-
 
 
 
@@ -149,12 +112,12 @@ view model =
                     ("display", "none")
 
         ulStyles = 
-            displayStyle :: menuStyles
+            displayStyle :: Styles.dropdownList
 
     in
-        div [ style mainContainerStyles ]
+        div [ style Styles.dropdownContainer ]
             [ p [ onClick <| FocusOn "myDropdown" 
-                , style mainStyles
+                , style Styles.dropdownInput
                 ] 
                 [ text <| itemText ] 
             , ul [ style ulStyles ]
@@ -169,12 +132,12 @@ viewFruit maybeSelected fruit =
                 Just selected ->
                     if selected == fruit then
                         ("background-color","rgba(50,100,200,.27)")
-                        :: itemStyles
+                        :: Styles.dropdownListItem
                     else
-                        itemStyles
+                        Styles.dropdownListItem
 
                 Nothing ->
-                    itemStyles
+                    Styles.dropdownListItem
     in
         li 
             [ style fruitStyles
