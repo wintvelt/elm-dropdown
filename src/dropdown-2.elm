@@ -18,12 +18,12 @@ main =
 -- our main model, which will change as we use the app
 type alias Model =
     { pickedFruit : Maybe Fruit
-    , focusedId : Maybe DomID
+    , focusedId : Maybe NodeID
     }
 
 -- simple types so we can read the code better
 type alias Fruit = String
-type alias DomID = String
+type alias NodeID = String
 
 -- global constants/ config
 assortment : List String
@@ -40,6 +40,7 @@ assortment =
 init : ( Model, Cmd Msg )
 init =
     { pickedFruit = Nothing
+    , focusedId = Nothing
     } ! []
 
 
@@ -49,13 +50,17 @@ init =
 
 type Msg
     = FruitPicked Fruit
+    | FocusOn NodeID
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
     FruitPicked fruit ->
-      { model | pickedFruit = Just fruit } ! []
+        { model | pickedFruit = Just fruit } ! []
+
+    FocusOn nodeID ->
+        { model | focusedId = Just nodeID } ! []
 
 
 
@@ -80,10 +85,19 @@ view model =
             |> Maybe.withDefault "-- pick a fruit --" 
             |> flip String.append " ▾"
 
+        displayStyle =
+            case model.focusedId of
+                Just "myDropdown" ->
+                    style [("display", "block")]
+
+                _ ->
+                    style [("display", "none")]
+
     in
         div []
-            [ p [] [ text <| itemText ] 
-            , ul []
+            [ p [ onClick <| FocusOn "myDropdown" ] 
+                [ text <| itemText ] 
+            , ul [ displayStyle ]
                 (List.map viewFruit assortment)
             ]
 
