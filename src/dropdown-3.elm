@@ -1,4 +1,4 @@
-{- Part 2, a simple picklist with focus
+{- Part 3, a simple picklist with focus
 This time menu is hidden when item is clicked
 -}
 import Html exposing (..)
