@@ -38,6 +38,24 @@ assortment =
     , "Elderberry"
     ]
 
+
+-- styles for main container
+mainContainerStyles : List (String, String)
+mainContainerStyles =
+    [ ("position","relative")
+    , ("margin","16px")
+    , ("width", "200px")
+    , ("display", "inline-block")
+    ]
+
+-- styles for main input field
+mainStyles : List (String, String)
+mainStyles =
+    [ ("padding","7px 0 6px 16px")
+    , ("width", "200px")
+    , ("margin","0")
+    ]
+
 -- styles for list container
 menuStyles : List (String, String)
 menuStyles =
@@ -46,6 +64,7 @@ menuStyles =
     , ("border-radius","4px")
     , ("box-shadow", "0 1px 2px rgba(0,0,0,.24)")
     , ("padding", "4px 8px")
+    , ("margin", "0")
     , ("width", "200px")
     , ("background-color", "white")
     ]
@@ -133,8 +152,10 @@ view model =
             displayStyle :: menuStyles
 
     in
-        div []
-            [ p [ onClick <| FocusOn "myDropdown" ] 
+        div [ style mainContainerStyles ]
+            [ p [ onClick <| FocusOn "myDropdown" 
+                , style mainStyles
+                ] 
                 [ text <| itemText ] 
             , ul [ style ulStyles ]
                 (List.map (viewFruit model.pickedFruit) assortment)
