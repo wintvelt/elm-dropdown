@@ -1,4 +1,5 @@
 {- Part 2, a simple picklist with focus
+This time menu is hidden when item is clicked
 -}
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -57,7 +58,10 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
     FruitPicked fruit ->
-        { model | pickedFruit = Just fruit } ! []
+        { model 
+        | pickedFruit = Just fruit 
+        , focusedId = Nothing
+        } ! []
 
     FocusOn nodeID ->
         { model | focusedId = Just nodeID } ! []
