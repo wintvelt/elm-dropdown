@@ -92,16 +92,23 @@ view model =
         displayStyle =
             case model.focusedId of
                 Just "myDropdown" ->
-                    style [("display", "block")]
+                    ("display", "block")
 
                 _ ->
-                    style [("display", "none")]
+                    ("display", "none")
+
+        ulStyles = 
+            displayStyle ::
+                [ ("padding", "4px 8px")
+                , ("width", "200px")
+                , ("background-color", "rgba(0,0,0,.17)")
+                ]
 
     in
         div []
             [ p [ onClick <| FocusOn "myDropdown" ] 
                 [ text <| itemText ] 
-            , ul [ displayStyle ]
+            , ul [ style ulStyles ]
                 (List.map viewFruit assortment)
             ]
 
