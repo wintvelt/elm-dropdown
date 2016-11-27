@@ -7,7 +7,6 @@ with some additional styling, imported from separate module
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Mouse exposing (Position)
 
 import Styles
 
@@ -20,119 +19,66 @@ main =
     }
 
 
--- MODEL
-
--- our main model, which will change as we use the app
-type alias Model =
-    { pickedFruit : Maybe Fruit
-    , focusedId : Maybe NodeID
+-- CONFIG
+-- the static stuff, that does not change during the apps lifecycle
+type alias Config a msg =
+    { idFrom : (a -> ItemID)
+    , selectedText : (Maybe ItemID -> String)
+    , focusMsg : msg
+    , itemMsg : (a -> msg)
+    , itemText : (a -> String)
     }
 
+-- DATA
+-- the dynamic stuff the view
+type alias Data a =
+    { data : List a
+    , isOpen : Bool
+    , selected : Maybe ItemID
+    }
+
+
 -- simple types so we can read the code better
-type alias Fruit = String
-type alias NodeID = String
-
--- global constants/ config
-assortment : List String
-assortment = 
-    [ "Apple"
-    , "Banana"
-    , "Cherry"
-    , "Durian"
-    , "Elderberry"
-    ]
-
-
-
-init : ( Model, Cmd Msg )
-init =
-    { pickedFruit = Nothing
-    , focusedId = Nothing
-    } ! []
-
-
-
--- UPDATE
-
-
-type Msg
-    = FruitPicked Fruit
-    | FocusOn NodeID
-    | Blur Position
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-  case msg of
-    FruitPicked fruit ->
-        { model 
-        | pickedFruit = Just fruit 
-        , focusedId = Nothing
-        } ! []
-
-    FocusOn nodeID ->
-        { model | focusedId = Just nodeID } ! []
-
-
-    Blur _ ->
-        { model | focusedId = Nothing } ! []
-
-
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-  case model.focusedId of
-    Just _ ->
-        Mouse.clicks Blur
-
-    Nothing ->
-        Sub.none
-
+type alias ItemID = String
 
 
 -- VIEW
 
 
 
-view : Model -> Html Msg
-view model =
+view : Config a msg -> Data a -> Html msg
+view config model =
     let
         itemText =
-            model.pickedFruit
-            |> Maybe.withDefault "-- pick a fruit --" 
+            config.selectedText data.selected
             |> flip String.append " ▾"
 
         displayStyle =
-            case model.focusedId of
-                Just "myDropdown" ->
-                    ("display", "block")
-
-                _ ->
-                    ("display", "none")
+            if data.isOpen then
+                ("display", "block")
+            else
+                ("display", "none")
 
         ulStyles = 
             displayStyle :: Styles.dropdownList
 
     in
         div [ style Styles.dropdownContainer ]
-            [ p [ onClick <| FocusOn "myDropdown" 
+            [ p [ onClick focusMsg
                 , style Styles.dropdownInput
                 ] 
                 [ text <| itemText ] 
             , ul [ style ulStyles ]
-                (List.map (viewFruit model.pickedFruit) assortment)
+                (List.map (viewItem config data.selected) data.data)
             ]
 
-viewFruit : Maybe Fruit -> Fruit -> Html Msg
-viewFruit maybeSelected fruit =
+viewItem : Config a msg -> Maybe ItemID -> a -> Html msg
+viewItem config maybeSelected item =
     let
-        fruitStyles =
+        itemStyles =
             case maybeSelected of
                 Just selected ->
-                    if selected == fruit then
+                    if selected == config.idFrom item then
                         ("background-color","rgba(50,100,200,.27)")
                         :: Styles.dropdownListItem
                     else
@@ -142,7 +88,7 @@ viewFruit maybeSelected fruit =
                     Styles.dropdownListItem
     in
         li 
-            [ style fruitStyles
-            , onClick <| FruitPicked fruit 
+            [ style itemStyles
+            , onClick (config.itemMsg item)
             ]
-            [ text fruit ]
+            [ text <| config.itemText item ]
