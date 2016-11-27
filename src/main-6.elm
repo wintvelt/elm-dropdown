@@ -45,7 +45,7 @@ dropdownConfig  =
     { idFrom = identity
     , selectedText = Maybe.withDefault "- pick a fruit -"
     , nodeID = "dropdown"
-    , focusMsg = FocusOn
+    , focusMsg = FocusOn "dropdown"
     , itemMsg = FruitPicked
     , itemText = identity
     }

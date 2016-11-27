@@ -17,7 +17,7 @@ type alias Config a id msg =
     { idFrom : (a -> id)
     , selectedText : (Maybe id -> String)
     , nodeID : NodeID
-    , focusMsg : (NodeID -> msg)
+    , focusMsg : msg
     , itemMsg : (a -> msg)
     , itemText : (a -> String)
     }
@@ -57,7 +57,7 @@ view config data =
 
     in
         div [ style Styles.dropdownContainer ]
-            [ p [ onClick <| config.focusMsg config.nodeID
+            [ p [ onClick config.focusMsg
                 , style Styles.dropdownInput
                 ] 
                 [ text <| itemText ] 
