@@ -16,7 +16,8 @@ import Styles
 type alias Config a msg =
     { idFrom : (a -> ItemID)
     , selectedText : (Maybe ItemID -> String)
-    , focusMsg : msg
+    , nodeID : NodeID
+    , focusMsg : (NodeID -> msg)
     , itemMsg : (a -> msg)
     , itemText : (a -> String)
     }
@@ -25,13 +26,14 @@ type alias Config a msg =
 -- the dynamic stuff the view
 type alias Data a =
     { data : List a
-    , isOpen : Bool
     , selected : Maybe ItemID
+    , isOpen : Bool
     }
 
 
 -- simple types so we can read the code better
 type alias ItemID = String
+type alias NodeID = String
 
 
 -- VIEW
@@ -56,7 +58,7 @@ view config data =
 
     in
         div [ style Styles.dropdownContainer ]
-            [ p [ onClick config.focusMsg
+            [ p [ onClick <| config.focusMsg config.nodeID
                 , style Styles.dropdownInput
                 ] 
                 [ text <| itemText ] 

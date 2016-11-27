@@ -44,7 +44,8 @@ dropdownConfig : Dropdown6.Config Fruit Msg
 dropdownConfig  =
     { idFrom = identity
     , selectedText = Maybe.withDefault "- pick a fruit -"
-    , focusMsg = FocusOn "dropdown"
+    , nodeID = "dropdown"
+    , focusMsg = FocusOn
     , itemMsg = FruitPicked
     , itemText = identity
     }
@@ -109,7 +110,7 @@ view model =
         { data = assortment
         , isOpen = 
             model.focusedId 
-            |> Maybe.map (\id -> id == "dropdown") 
+            |> Maybe.map (\id -> id == dropdownConfig.nodeID) 
             |> Maybe.withDefault False
         , selected = model.pickedFruit
         }
