@@ -6,16 +6,17 @@ dropdownContainer : List (String, String)
 dropdownContainer =
     [ ("position","relative")
     , ("margin","16px")
-    , ("width", "200px")
+    , ("width", "216px")
     , ("display", "inline-block")
     ]
 
 -- styles for main input field
 dropdownInput : List (String, String)
 dropdownInput =
-    [ ("padding","7px 0 6px 16px")
-    , ("width", "200px")
+    [ ("padding","6px 8px 8px 15px")
     , ("margin","0")
+    , ("border","1px solid rgba(0,0,0,.17)")
+    , ("border-radius","4px")
     ]
 
 -- styles for list container
