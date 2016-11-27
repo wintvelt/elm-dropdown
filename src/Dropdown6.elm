@@ -13,9 +13,9 @@ import Styles
 
 -- CONFIG
 -- the static stuff, that does not change during the apps lifecycle
-type alias Config a msg =
-    { idFrom : (a -> ItemID)
-    , selectedText : (Maybe ItemID -> String)
+type alias Config a id msg =
+    { idFrom : (a -> id)
+    , selectedText : (Maybe id -> String)
     , nodeID : NodeID
     , focusMsg : (NodeID -> msg)
     , itemMsg : (a -> msg)
@@ -24,15 +24,14 @@ type alias Config a msg =
 
 -- DATA
 -- the dynamic stuff the view
-type alias Data a =
+type alias Data a id =
     { data : List a
-    , selected : Maybe ItemID
+    , selected : Maybe id
     , isOpen : Bool
     }
 
 
 -- simple types so we can read the code better
-type alias ItemID = String
 type alias NodeID = String
 
 
@@ -40,7 +39,7 @@ type alias NodeID = String
 
 
 
-view : Config a msg -> Data a -> Html msg
+view : Config a id msg -> Data a id -> Html msg
 view config data =
     let
         itemText =
@@ -66,7 +65,7 @@ view config data =
                 (List.map (viewItem config data.selected) data.data)
             ]
 
-viewItem : Config a msg -> Maybe ItemID -> a -> Html msg
+viewItem : Config a id msg -> Maybe id -> a -> Html msg
 viewItem config maybeSelected item =
     let
         itemStyles =

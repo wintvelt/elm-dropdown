@@ -40,7 +40,7 @@ assortment =
     , "Elderberry"
     ]
 
-dropdownConfig : Dropdown6.Config Fruit Msg
+dropdownConfig : Dropdown6.Config Fruit Fruit Msg
 dropdownConfig  =
     { idFrom = identity
     , selectedText = Maybe.withDefault "- pick a fruit -"
