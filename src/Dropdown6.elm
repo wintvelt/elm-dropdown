@@ -1,4 +1,4 @@
-module Dropdown exposing (..)
+module Dropdown6 exposing (..)
 {- Part 6, where we extract the dropdown from main
 This is a simple dropdown with focus
 and subscription to Mouse.clicks to close the dropdown
@@ -9,14 +9,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
 import Styles
-
-main =
-  Html.program
-    { init = init
-    , view = view
-    , update = update
-    , subscriptions = subscriptions
-    }
 
 
 -- CONFIG
@@ -47,7 +39,7 @@ type alias ItemID = String
 
 
 view : Config a msg -> Data a -> Html msg
-view config model =
+view config data =
     let
         itemText =
             config.selectedText data.selected
@@ -64,7 +56,7 @@ view config model =
 
     in
         div [ style Styles.dropdownContainer ]
-            [ p [ onClick focusMsg
+            [ p [ onClick config.focusMsg
                 , style Styles.dropdownInput
                 ] 
                 [ text <| itemText ] 
