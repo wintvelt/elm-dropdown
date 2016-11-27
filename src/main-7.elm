@@ -144,6 +144,6 @@ view model =
             , Dropdown6.view quantityConfig
                 { data = quantities
                 , isOpen = isOpen quantityConfig.nodeID
-                , selected = model.pickedFruit
+                , selected = model.pickedQuantity
                 }
             ]
