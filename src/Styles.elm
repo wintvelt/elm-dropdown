@@ -1,7 +1,15 @@
 module Styles exposing (..)
 {- Css styles for dropdown, moved off to separate module
 -}
--- styles for main container
+-- styles for main
+mainContainer : List (String, String)
+mainContainer =
+    [ ("height","100%")
+    , ("background-color","#fafafa")
+    , ("padding","16px")
+    ]
+
+-- styles for dropdown container
 dropdownContainer : List (String, String)
 dropdownContainer =
     [ ("position","relative")
@@ -19,6 +27,7 @@ dropdownInput =
     , ("margin","0")
     , ("border","1px solid rgba(0,0,0,.17)")
     , ("border-radius","4px")
+    , ("background-color","white")
     , ("display","flex")
     , ("alignItems","center")
     ]

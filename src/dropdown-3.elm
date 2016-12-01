@@ -175,7 +175,7 @@ view model =
                     ] 
 
     in
-        div []
+        div [ style Styles.mainContainer ]
             [ div 
                 [ style Styles.dropdownContainer ]
                 [ p 
