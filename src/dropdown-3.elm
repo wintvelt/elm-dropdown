@@ -24,17 +24,20 @@ main =
 
 -- our main model, which will change as we use the app
 type alias Model =
-    { pickedCarBrand : Maybe CarBrand
-    , isOpen : Bool
+    { carBrand : Maybe CarBrand
+    , carModel : Maybe CarModel
+    , isOpen : OpenState
     }
+
+type OpenState = AllClosed | BrandOpen | CarModelOpen
 
 -- simple types so we can read the code better
 type alias CarBrand = String
-type alias CarMake = String
+type alias CarModel = String
 
 -- global constants/ config
-carMakes : Dict CarBrand (List CarMake)
-carMakes =
+allCars : Dict CarBrand (List CarModel)
+allCars =
     Dict.fromList
         [ ("Audi",["A3","A4","A5","TT"])
         , ("BMW",["316i","525i","X3"])
@@ -44,13 +47,14 @@ carMakes =
 
 carBrands : List CarBrand
 carBrands = 
-    Dict.keys carMakes
+    Dict.keys allCars
 
 
 init : ( Model, Cmd Msg )
 init =
-    { pickedCarBrand = Nothing
-    , isOpen = False
+    { carBrand = Nothing
+    , carModel = Nothing
+    , isOpen = AllClosed
     } ! []
 
 
@@ -59,25 +63,55 @@ init =
 
 
 type Msg
-    = CarBrandPicked CarBrand
-    | DropDownClicked
+    = BrandPicked CarBrand
+    | CarModelPicked CarModel
+    | BrandToggled
+    | CarModelToggled
     | Blur Position
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
-    CarBrandPicked carBrand ->
+    BrandPicked carBrand ->
         { model 
-        | pickedCarBrand = Just carBrand 
-        , isOpen = False
+        | carBrand = Just carBrand
+        , carModel =
+            if model.carBrand /= Just carBrand then
+                Nothing
+            else
+                model.carModel
+        , isOpen = AllClosed
         } ! []
 
-    DropDownClicked ->
-        { model | isOpen = not model.isOpen } ! []
+    CarModelPicked carModel ->
+        { model 
+        | carModel = Just carModel
+        , isOpen = AllClosed
+        } ! []
+
+    BrandToggled ->
+        { model 
+        | isOpen = 
+            case model.isOpen of
+                BrandOpen -> 
+                    AllClosed
+                _ -> 
+                    BrandOpen
+        } ! []
+
+    CarModelToggled ->
+        { model 
+        | isOpen = 
+            case model.isOpen of
+                CarModelOpen -> 
+                    AllClosed
+                _ -> 
+                    CarModelOpen
+        } ! []
 
     Blur _ ->
-        { model | isOpen = False } ! []
+        { model | isOpen = AllClosed } ! []
 
 
 
@@ -86,10 +120,11 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    if model.isOpen then
-        Mouse.clicks Blur
-    else
-        Sub.none
+    case model.isOpen of
+        AllClosed ->
+            Sub.none
+        _ ->
+            Mouse.clicks Blur
 
 
 
@@ -101,37 +136,87 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     let
-        selectedText =
-            model.pickedCarBrand
+        brandText =
+            model.carBrand
             |> Maybe.withDefault "-- pick a car brand --" 
 
-        displayStyle =
-            if model.isOpen then
-                ("display", "block")
-            else
-                ("display", "none")
+        carModelText =
+            model.carModel
+            |> Maybe.withDefault "-- pick a model --" 
+
+        brandDisplayStyle =
+            case model.isOpen of
+                BrandOpen ->
+                    ("display", "block")
+                _ ->
+                    ("display", "none")
+
+        carModelDisplayStyle =
+            case model.isOpen of
+                CarModelOpen ->
+                    ("display", "block")
+                _ ->
+                    ("display", "none")
+
+        carModels =
+            model.carBrand
+            |> Maybe.andThen (\b -> Dict.get b allCars)
+            |> Maybe.withDefault []
+
+        carModelsAttr =
+            case carModels of
+                [] -> 
+                    [ style <| Styles.dropdownDisabled ++ Styles.dropdownInput
+                    ] 
+
+                _ ->
+                    [ style Styles.dropdownInput
+                    , onClick CarModelToggled 
+                    ] 
 
     in
-        div [ style Styles.dropdownContainer ]
-            [ p 
-                [ style Styles.dropdownInput
-                , onClick DropDownClicked 
-                ] 
-                [ span [ style Styles.dropdownText ] [ text <| selectedText ] 
-                , span [] [ text " ▾" ]
+        div []
+            [ div 
+                [ style Styles.dropdownContainer ]
+                [ p 
+                    [ style Styles.dropdownInput
+                    , onClick BrandToggled 
+                    ] 
+                    [ span [ style Styles.dropdownText ] [ text <| brandText ] 
+                    , span [] [ text " ▾" ]
+                    ]
+                , ul 
+                    [ style <| brandDisplayStyle :: Styles.dropdownList ]
+                    (List.map viewCarBrand carBrands)
                 ]
-            , ul 
-                [ style <| displayStyle :: Styles.dropdownList ]
-                (List.map viewCarBrand carBrands)
+            , div 
+                [ style Styles.dropdownContainer ]
+                [ p 
+                    carModelsAttr
+                    [ span [ style Styles.dropdownText ] [ text <| carModelText ] 
+                    , span [] [ text " ▾" ]
+                    ]
+                , ul 
+                    [ style <| carModelDisplayStyle :: Styles.dropdownList ]
+                    (List.map viewCarModel carModels)
+                ]
             ]
-
+    
 viewCarBrand : CarBrand -> Html Msg
 viewCarBrand carBrand =
     li 
         [ style Styles.dropdownListItem
-        , onClick <| CarBrandPicked carBrand 
+        , onClick <| BrandPicked carBrand 
         ]
         [ text carBrand ]
+
+viewCarModel : CarModel -> Html Msg
+viewCarModel carModel =
+    li 
+        [ style Styles.dropdownListItem
+        , onClick <| CarModelPicked carModel 
+        ]
+        [ text carModel ]
 
 
 -- helper to cancel click anywhere

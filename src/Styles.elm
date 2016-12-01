@@ -23,6 +23,12 @@ dropdownInput =
     , ("alignItems","center")
     ]
 
+-- disabled style
+dropdownDisabled : List (String, String)
+dropdownDisabled =
+    [ ("color","rgba(0,0,0,.54") ]
+
+
 -- styles for the text of selected item
 dropdownText : List (String, String)
 dropdownText =
