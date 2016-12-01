@@ -4,7 +4,8 @@ and blur when clicked outside
 -}
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onWithOptions)
+import Json.Decode as Json
 import Mouse exposing (Position)
 
 import Styles
@@ -23,12 +24,11 @@ main =
 -- our main model, which will change as we use the app
 type alias Model =
     { pickedCarBrand : Maybe CarBrand
-    , isOpen : DropDownState
+    , isOpen : Bool
     }
 
 -- simple types so we can read the code better
 type alias CarBrand = String
-type DropDownState = Open | Closed
 
 -- global constants/ config
 carBrands : List String
@@ -45,7 +45,7 @@ carBrands =
 init : ( Model, Cmd Msg )
 init =
     { pickedCarBrand = Nothing
-    , isOpen = Closed
+    , isOpen = False
     } ! []
 
 
@@ -59,20 +59,20 @@ type Msg
     | Blur Position
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
     CarBrandPicked carBrand ->
         { model 
         | pickedCarBrand = Just carBrand 
-        , isOpen = Closed
+        , isOpen = False
         } ! []
 
     DropDownClicked ->
-        { model | isOpen = Open } ! []
+        { model | isOpen = not model.isOpen } ! []
 
     Blur _ ->
-        { model | isOpen = Closed } ! []
+        { model | isOpen = False } ! []
 
 
 
@@ -81,11 +81,9 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  case model.focusedId of
-    Just _ ->
+    if model.isOpen then
         Mouse.clicks Blur
-
-    Nothing ->
+    else
         Sub.none
 
 
@@ -103,12 +101,10 @@ view model =
             |> Maybe.withDefault "-- pick a car brand --" 
 
         displayStyle =
-            case model.isOpen of
-                Open ->
-                    ("display", "block")
-
-                Closed ->
-                    ("display", "none")
+            if model.isOpen then
+                ("display", "block")
+            else
+                ("display", "none")
 
     in
         div [ style Styles.dropdownContainer ]
@@ -131,3 +127,14 @@ viewCarBrand carBrand =
         , onClick <| CarBrandPicked carBrand 
         ]
         [ text carBrand ]
+
+
+-- helper to cancel click anywhere
+onClick : msg -> Attribute msg
+onClick message =
+    onWithOptions 
+        "click" 
+        { stopPropagation = True
+        , preventDefault = False
+        }
+        (Json.succeed message)
