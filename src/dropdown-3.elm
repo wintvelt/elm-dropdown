@@ -38,7 +38,7 @@ carMakes =
         [ ("Audi",["A3","A4","A5","TT"])
         , ("BMW",["316i","525i","X3"]
         , ("Chevrolet",["Bolt","Camaro","Spark","Volt"]
-        , ("Ford"
+        , ("Ford",["Focus","Kia","Mondeo"]
         ]
 
 carBrands : List CarBrand
