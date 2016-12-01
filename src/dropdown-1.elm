@@ -26,7 +26,7 @@ type alias Model =
 type alias CarBrand = String
 
 -- global constants/ config
-carBrands : List String
+carBrands : List CarBrand
 carBrands = 
     [ "Audi"
     , "BMW"

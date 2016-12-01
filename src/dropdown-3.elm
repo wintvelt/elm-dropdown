@@ -1,4 +1,4 @@
-{- a dropdown 
+{- two dropdowns
 with open/ close state
 and blur when clicked outside
 -}
@@ -40,6 +40,7 @@ carBrands =
     , "Ford"
     ]
 
+carMakes : Dict CarBrand CarMake
 
 
 init : ( Model, Cmd Msg )
