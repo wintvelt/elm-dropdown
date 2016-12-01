@@ -7,11 +7,10 @@ import Html.Events exposing (onClick)
 import Styles
 
 main =
-  Html.program
-    { init = init
+  Html.beginnerProgram
+    { model = init
     , view = view
     , update = update
-    , subscriptions = subscriptions
     }
 
 
@@ -39,11 +38,11 @@ carBrands =
 
 
 
-init : ( Model, Cmd Msg )
+init : Model
 init =
     { pickedCarBrand = Nothing
     , isOpen = Closed
-    } ! []
+    }
 
 
 
@@ -55,26 +54,18 @@ type Msg
     | DropDownClicked
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> Model
 update msg model =
   case msg of
     CarBrandPicked carBrand ->
         { model 
         | pickedCarBrand = Just carBrand 
         , isOpen = Closed
-        } ! []
+        }
 
     DropDownClicked ->
-        { model | isOpen = Open } ! []
+        { model | isOpen = Open }
 
-
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-  Sub.none
 
 
 
