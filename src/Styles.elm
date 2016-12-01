@@ -8,22 +8,31 @@ dropdownContainer =
     , ("margin","16px")
     , ("width", "216px")
     , ("display", "inline-block")
+    , ("fontFamily", "sans-serif")
+    , ("fontSize", "16px")
     ]
 
 -- styles for main input field
 dropdownInput : List (String, String)
 dropdownInput =
-    [ ("padding","6px 8px 8px 15px")
+    [ ("padding","6px 12px 8px 15px")
     , ("margin","0")
     , ("border","1px solid rgba(0,0,0,.17)")
     , ("border-radius","4px")
+    , ("display","flex")
+    , ("alignItems","center")
     ]
+
+-- styles for the text of selected item
+dropdownText : List (String, String)
+dropdownText =
+    [ ("flex","1 0 auto")]
 
 -- styles for list container
 dropdownList : List (String, String)
 dropdownList =
     [ ("position", "absolute")
-    , ("top", "0")
+    , ("top", "36px")
     , ("border-radius","4px")
     , ("box-shadow", "0 1px 2px rgba(0,0,0,.24)")
     , ("padding", "4px 8px")
@@ -36,5 +45,5 @@ dropdownList =
 dropdownListItem : List (String, String)
 dropdownListItem =
     [ ("display", "block")
-    , ("padding","4px 8px")
+    , ("padding","8px 8px")
     ]
