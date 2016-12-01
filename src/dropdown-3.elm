@@ -5,6 +5,7 @@ and blur when clicked outside
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onWithOptions)
+import Dict exposing (Dict)
 import Json.Decode as Json
 import Mouse exposing (Position)
 
@@ -36,9 +37,9 @@ carMakes : Dict CarBrand (List CarMake)
 carMakes =
     Dict.fromList
         [ ("Audi",["A3","A4","A5","TT"])
-        , ("BMW",["316i","525i","X3"]
-        , ("Chevrolet",["Bolt","Camaro","Spark","Volt"]
-        , ("Ford",["Focus","Kia","Mondeo"]
+        , ("BMW",["316i","525i","X3"])
+        , ("Chevrolet",["Bolt","Camaro","Spark","Volt"])
+        , ("Ford",["Focus","Kia","Mondeo"])
         ]
 
 carBrands : List CarBrand
