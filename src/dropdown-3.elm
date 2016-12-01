@@ -29,18 +29,21 @@ type alias Model =
 
 -- simple types so we can read the code better
 type alias CarBrand = String
+type alias CarMake = String
 
 -- global constants/ config
+carMakes : Dict CarBrand (List CarMake)
+carMakes =
+    Dict.fromList
+        [ ("Audi",["A3","A4","A5","TT"])
+        , ("BMW",["316i","525i","X3"]
+        , ("Chevrolet",["Bolt","Camaro","Spark","Volt"]
+        , ("Ford"
+        ]
+
 carBrands : List CarBrand
 carBrands = 
-    [ "Audi"
-    , "BMW"
-    , "Chevrolet"
-    , "Daimler"
-    , "Ford"
-    ]
-
-carMakes : Dict CarBrand CarMake
+    Dict.keys carMakes
 
 
 init : ( Model, Cmd Msg )

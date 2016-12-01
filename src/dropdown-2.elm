@@ -36,7 +36,6 @@ carBrands =
     [ "Audi"
     , "BMW"
     , "Chevrolet"
-    , "Daimler"
     , "Ford"
     ]
 
