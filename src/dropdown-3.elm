@@ -194,7 +194,7 @@ view model =
                 [ p 
                     carModelsAttr
                     [ span [ style Styles.dropdownText ] [ text <| carModelText ] 
-                    , span [] [ text " ▾" ]
+                    , span [] [ text "▾" ]
                     ]
                 , ul 
                     [ style <| carModelDisplayStyle :: Styles.dropdownList ]
