@@ -1,15 +1,16 @@
-{- Part 1, a simple picklist
+{- a simple dropdown with open/ close state
 -}
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
+import Styles
+
 main =
-  Html.program
-    { init = init
+  Html.beginnerProgram
+    { model = init
     , view = view
     , update = update
-    , subscriptions = subscriptions
     }
 
 
@@ -17,28 +18,31 @@ main =
 
 -- our main model, which will change as we use the app
 type alias Model =
-    { pickedFruit : Maybe Fruit
+    { pickedCarBrand : Maybe CarBrand
+    , isOpen : DropDownState
     }
 
 -- simple types so we can read the code better
-type alias Fruit = String
+type alias CarBrand = String
+type DropDownState = Open | Closed
 
 -- global constants/ config
-assortment : List String
-assortment = 
-    [ "Apple"
-    , "Banana"
-    , "Cherry"
-    , "Durian"
-    , "Elderberry"
+carBrands : List String
+carBrands = 
+    [ "Audi"
+    , "BMW"
+    , "Chevrolet"
+    , "Daimler"
+    , "Ford"
     ]
 
 
 
-init : ( Model, Cmd Msg )
+init : Model
 init =
-    { pickedFruit = Nothing
-    } ! []
+    { pickedCarBrand = Nothing
+    , isOpen = Closed
+    }
 
 
 
@@ -46,23 +50,22 @@ init =
 
 
 type Msg
-    = FruitPicked Fruit
+    = CarBrandPicked CarBrand
+    | DropDownClicked
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> Model
 update msg model =
   case msg of
-    FruitPicked fruit ->
-      { model | pickedFruit = Just fruit } ! []
+    CarBrandPicked carBrand ->
+        { model 
+        | pickedCarBrand = Just carBrand 
+        , isOpen = Closed
+        }
 
+    DropDownClicked ->
+        { model | isOpen = Open }
 
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-  Sub.none
 
 
 
@@ -73,19 +76,36 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     let
-        itemText =
-            model.pickedFruit
-            |> Maybe.withDefault "-- pick a fruit --" 
-            |> flip String.append " ▾"
+        selectedText =
+            model.pickedCarBrand
+            |> Maybe.withDefault "-- pick a car brand --" 
+
+        displayStyle =
+            case model.isOpen of
+                Open ->
+                    ("display", "block")
+
+                Closed ->
+                    ("display", "none")
 
     in
-        div []
-            [ p [] [ text <| itemText ] 
-            , ul []
-                (List.map viewFruit assortment)
+        div [ style Styles.dropdownContainer ]
+            [ p 
+                [ style Styles.dropdownInput
+                , onClick DropDownClicked 
+                ] 
+                [ span [ style Styles.dropdownText ] [ text <| selectedText ] 
+                , span [] [ text " ▾" ]
+                ]
+            , ul 
+                [ style <| displayStyle :: Styles.dropdownList ]
+                (List.map viewCarBrand carBrands)
             ]
 
-viewFruit : Fruit -> Html Msg
-viewFruit fruit =
-    li [ onClick <| FruitPicked fruit ]
-        [ text fruit ]
+viewCarBrand : CarBrand -> Html Msg
+viewCarBrand carBrand =
+    li 
+        [ style Styles.dropdownListItem
+        , onClick <| CarBrandPicked carBrand 
+        ]
+        [ text carBrand ]
