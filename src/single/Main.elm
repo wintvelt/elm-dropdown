@@ -5,6 +5,7 @@ and blur when clicked outside
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onWithOptions)
+import Dict exposing (Dict)
 import Json.Decode as Json
 import Mouse exposing (Position)
 
@@ -23,27 +24,32 @@ main =
 
 -- our main model, which will change as we use the app
 type alias Model =
-    { pickedCarBrand : Maybe CarBrand
+    { pickedCountry : Maybe Country
     , isOpen : Bool
     }
 
 -- simple types so we can read the code better
-type alias CarBrand = String
+type alias Country = String
+type alias City = String
 
 -- global constants/ config
-carBrands : List CarBrand
-carBrands = 
-    [ "Audi"
-    , "BMW"
-    , "Chevrolet"
-    , "Ford"
-    ]
+allCities : Dict Country (List City)
+allCities =
+    Dict.fromList
+        [ ("Spain",["Barcelona","Madrid","Alicante","Valencia"])
+        , ("Germany",["Berlin","München","Bonn","Leipzig"])
+        , ("France",["Paris","Lyon","Marseille","Dijon"])
+        , ("Italy",["Florence","Rome","Milan"])
+        ]
 
+countries : List Country
+countries = 
+    Dict.keys allCities
 
 
 init : ( Model, Cmd Msg )
 init =
-    { pickedCarBrand = Nothing
+    { pickedCountry = Nothing
     , isOpen = False
     } ! []
 
@@ -53,7 +59,7 @@ init =
 
 
 type Msg
-    = CarBrandPicked CarBrand
+    = CountryPicked Country
     | DropDownClicked
     | Blur Position
 
@@ -61,9 +67,9 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
-    CarBrandPicked carBrand ->
+    CountryPicked country ->
         { model 
-        | pickedCarBrand = Just carBrand 
+        | pickedCountry = Just country 
         , isOpen = False
         } ! []
 
@@ -96,8 +102,8 @@ view : Model -> Html Msg
 view model =
     let
         selectedText =
-            model.pickedCarBrand
-            |> Maybe.withDefault "-- pick a car brand --" 
+            model.pickedCountry
+            |> Maybe.withDefault "-- pick a country --" 
 
         displayStyle =
             if model.isOpen then
@@ -116,16 +122,16 @@ view model =
                 ]
             , ul 
                 [ style <| displayStyle :: Styles.dropdownList ]
-                (List.map viewCarBrand carBrands)
+                (List.map viewCountry countries)
             ]
 
-viewCarBrand : CarBrand -> Html Msg
-viewCarBrand carBrand =
+viewCountry : Country -> Html Msg
+viewCountry country =
     li 
         [ style Styles.dropdownListItem
-        , onClick <| CarBrandPicked carBrand 
+        , onClick <| CountryPicked country 
         ]
-        [ text carBrand ]
+        [ text country ]
 
 
 -- helper to cancel click anywhere
