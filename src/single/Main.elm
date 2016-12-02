@@ -8,7 +8,7 @@ import Html.Events exposing (onWithOptions)
 import Json.Decode as Json
 import Mouse exposing (Position)
 
-import Styles
+import Styles.Styles as Styles
 
 main =
   Html.program
