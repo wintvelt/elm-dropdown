@@ -1,61 +1,33 @@
-{- two dropdowns
-with open/ close state
-and blur when clicked outside
+module Nested.Dropdown exposing 
+    (Model, init, Msg, update, view)
+{- a Dropdown component that manages its own state
 -}
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onWithOptions)
-import Dict exposing (Dict)
 import Json.Decode as Json
-import Mouse exposing (Position)
 
-import Styles
-
-main =
-  Html.program
-    { init = init
-    , view = view
-    , update = update
-    , subscriptions = subscriptions
-    }
+import Styles.Styles as Styles
 
 
 -- MODEL
 
--- our main model, which will change as we use the app
+{- main model, opaque to ensure it can only be updated thru Msg and Update
+-}
 type alias Model =
-    { carBrand : Maybe CarBrand
-    , carModel : Maybe CarModel
-    , isOpen : OpenState
-    }
-
-type OpenState = AllClosed | BrandOpen | CarModelOpen
-
--- simple types so we can read the code better
-type alias CarBrand = String
-type alias CarModel = String
-
--- global constants/ config
-allCars : Dict CarBrand (List CarModel)
-allCars =
-    Dict.fromList
-        [ ("Audi",["A3","A4","A5","TT"])
-        , ("BMW",["316i","525i","X3"])
-        , ("Chevrolet",["Bolt","Camaro","Spark","Volt"])
-        , ("Ford",["Focus","Kia","Mondeo"])
-        ]
-
-carBrands : List CarBrand
-carBrands = 
-    Dict.keys allCars
+    Model
+        { selectedItem : Maybe String
+        , isOpen : OpenState
+        }
 
 
-init : ( Model, Cmd Msg )
+init : Model
 init =
-    { carBrand = Nothing
-    , carModel = Nothing
-    , isOpen = AllClosed
-    } ! []
+    Model
+        { selectedItem = Nothing
+        , isOpen = False
+        }
+
 
 
 
