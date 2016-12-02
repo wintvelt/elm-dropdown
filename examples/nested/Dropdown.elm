@@ -41,7 +41,7 @@ selectedFrom : Model -> Maybe String
 selectedFrom (Model {selectedItem}) =
     selectedItem
 
-openState : Model -> Maybe String
+openState : Model -> Bool
 openState (Model {isOpen}) =
     isOpen
 
@@ -62,9 +62,10 @@ update msg (Model model) =
     ItemPicked item ->
         ( Model
             { model 
-            | selectedItem = Just item
+            | selectedItem = item
+            , isOpen = False
             }
-        , Just item
+        , item
         )
 
     SetOpenState newState ->
@@ -124,7 +125,7 @@ viewItem : String -> Html Msg
 viewItem item =
     li 
         [ style Styles.dropdownListItem
-        , onClick <| ItemPicked item 
+        , onClick <| ItemPicked <| Just item 
         ]
         [ text item ]
 

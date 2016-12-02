@@ -5,12 +5,13 @@ using a nested approach
 importing a module that manages its own state
 -}
 import Html exposing (..)
+import Html.Attributes exposing (style)
 import Dict exposing (Dict)
 import Json.Decode as Json
 import Mouse exposing (Position)
 
 import Styles.Styles as Styles
-import Dropdown
+import Nested.Dropdown as Dropdown
 
 main =
   Html.program
@@ -78,13 +79,13 @@ update msg model =
                 Dropdown.update countryMsg model.country
 
             (newCity, _) =
-                if newSelectedCountry /= oldCountry then
+                if newSelectedCountry /= Nothing && newSelectedCountry /= oldCountry then
                     Dropdown.update (Dropdown.ItemPicked Nothing) model.city
                 else
                     (model.city, Nothing)
 
             (closedNewCity, _) =
-                Dropdown.update (Dropdown.SetOpenState False) model.city
+                Dropdown.update (Dropdown.SetOpenState False) newCity
 
 
         in
@@ -130,9 +131,9 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     if Dropdown.openState model.country || Dropdown.openState model.city then
-        Sub.none
-    else
         Mouse.clicks Blur
+    else
+        Sub.none
 
 
 
@@ -171,6 +172,6 @@ view model =
 
     in
         div [ style Styles.mainContainer ]
-            [ Dropdown.view countryText model.country countries
-            , Dropdown.view cityText model.city cities
+            [ Html.map CountryMsg <| Dropdown.view countryText model.country countries
+            , Html.map CityMsg <| Dropdown.view cityText model.city cities
             ]
