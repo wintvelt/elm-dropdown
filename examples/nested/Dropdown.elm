@@ -1,5 +1,5 @@
 module Nested.Dropdown exposing 
-    (Model, init, Msg, update, view)
+    (Config, Model, init, selectedFrom, openState, Msg, update, view)
 {- a Dropdown component that manages its own state
 -}
 import Html exposing (..)
@@ -10,14 +10,15 @@ import Json.Decode as Json
 import Styles.Styles as Styles
 
 
+
 -- MODEL
 
 {- main model, opaque to ensure it can only be updated thru Msg and Update
 -}
-type alias Model =
+type Model =
     Model
         { selectedItem : Maybe String
-        , isOpen : OpenState
+        , isOpen : Bool
         }
 
 
@@ -28,6 +29,22 @@ init =
         , isOpen = False
         }
 
+{- Config type alias
+(this is stuff not managed by the dropdown, but passed in from parent)
+kind of like props (including callbacks) in react
+in our dropdown config is the default text, displayed if no item is selected
+-} 
+type alias Config = String
+
+-- helpers to enable reading from Model
+selectedFrom : Model -> Maybe String
+selectedFrom (Model {selectedItem}) =
+    selectedItem
+
+openState : Model -> Maybe String
+openState (Model {isOpen}) =
+    isOpen
+
 
 
 
@@ -35,68 +52,28 @@ init =
 
 
 type Msg
-    = BrandPicked CarBrand
-    | CarModelPicked CarModel
-    | BrandToggled
-    | CarModelToggled
-    | Blur Position
+    = ItemPicked (Maybe String)
+    | SetOpenState Bool
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Msg -> Model -> ( Model, Maybe String )
+update msg (Model model) =
   case msg of
-    BrandPicked carBrand ->
-        { model 
-        | carBrand = Just carBrand
-        , carModel =
-            if model.carBrand /= Just carBrand then
-                Nothing
-            else
-                model.carModel
-        , isOpen = AllClosed
-        } ! []
+    ItemPicked item ->
+        ( Model
+            { model 
+            | selectedItem = Just item
+            }
+        , Just item
+        )
 
-    CarModelPicked carModel ->
-        { model 
-        | carModel = Just carModel
-        , isOpen = AllClosed
-        } ! []
-
-    BrandToggled ->
-        { model 
-        | isOpen = 
-            case model.isOpen of
-                BrandOpen -> 
-                    AllClosed
-                _ -> 
-                    BrandOpen
-        } ! []
-
-    CarModelToggled ->
-        { model 
-        | isOpen = 
-            case model.isOpen of
-                CarModelOpen -> 
-                    AllClosed
-                _ -> 
-                    CarModelOpen
-        } ! []
-
-    Blur _ ->
-        { model | isOpen = AllClosed } ! []
-
-
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    case model.isOpen of
-        AllClosed ->
-            Sub.none
-        _ ->
-            Mouse.clicks Blur
+    SetOpenState newState ->
+        ( Model
+            { model 
+            | isOpen = newState
+            }
+        , Nothing
+        )
 
 
 
@@ -105,90 +82,51 @@ subscriptions model =
 
 
 
-view : Model -> Html Msg
-view model =
+view : Config -> Model -> List String -> Html Msg
+view config (Model model) data =
     let
-        brandText =
-            model.carBrand
-            |> Maybe.withDefault "-- pick a car brand --" 
+        mainText =
+            model.selectedItem
+            |> Maybe.withDefault config
 
-        carModelText =
-            model.carModel
-            |> Maybe.withDefault "-- pick a model --" 
+        displayStyle =
+            if model.isOpen then
+                ("display", "block")
+            else
+                ("display", "none")
 
-        brandDisplayStyle =
-            case model.isOpen of
-                BrandOpen ->
-                    ("display", "block")
-                _ ->
-                    ("display", "none")
-
-        carModelDisplayStyle =
-            case model.isOpen of
-                CarModelOpen ->
-                    ("display", "block")
-                _ ->
-                    ("display", "none")
-
-        carModels =
-            model.carBrand
-            |> Maybe.andThen (\b -> Dict.get b allCars)
-            |> Maybe.withDefault []
-
-        carModelsAttr =
-            case carModels of
+        mainAttr =
+            case data of
                 [] -> 
                     [ style <| Styles.dropdownDisabled ++ Styles.dropdownInput
                     ] 
 
                 _ ->
                     [ style Styles.dropdownInput
-                    , onClick CarModelToggled 
+                    , onClick <| SetOpenState <| not model.isOpen 
                     ] 
 
     in
-        div [ style Styles.mainContainer ]
-            [ div 
-                [ style Styles.dropdownContainer ]
-                [ p 
-                    [ style Styles.dropdownInput
-                    , onClick BrandToggled 
-                    ] 
-                    [ span [ style Styles.dropdownText ] [ text <| brandText ] 
-                    , span [] [ text " ▾" ]
-                    ]
-                , ul 
-                    [ style <| brandDisplayStyle :: Styles.dropdownList ]
-                    (List.map viewCarBrand carBrands)
+        div 
+            [ style Styles.dropdownContainer ]
+            [ p 
+                mainAttr
+                [ span [ style Styles.dropdownText ] [ text mainText ] 
+                , span [] [ text "▾" ]
                 ]
-            , div 
-                [ style Styles.dropdownContainer ]
-                [ p 
-                    carModelsAttr
-                    [ span [ style Styles.dropdownText ] [ text <| carModelText ] 
-                    , span [] [ text "▾" ]
-                    ]
-                , ul 
-                    [ style <| carModelDisplayStyle :: Styles.dropdownList ]
-                    (List.map viewCarModel carModels)
-                ]
+            , ul 
+                [ style <| displayStyle :: Styles.dropdownList ]
+                (List.map viewItem data)
             ]
+            
     
-viewCarBrand : CarBrand -> Html Msg
-viewCarBrand carBrand =
+viewItem : String -> Html Msg
+viewItem item =
     li 
         [ style Styles.dropdownListItem
-        , onClick <| BrandPicked carBrand 
+        , onClick <| ItemPicked item 
         ]
-        [ text carBrand ]
-
-viewCarModel : CarModel -> Html Msg
-viewCarModel carModel =
-    li 
-        [ style Styles.dropdownListItem
-        , onClick <| CarModelPicked carModel 
-        ]
-        [ text carModel ]
+        [ text item ]
 
 
 -- helper to cancel click anywhere
