@@ -19,9 +19,11 @@ In itself, the implications of this are small. The reason for extracting the dro
 
 The *key differences* become clear when we zoom in on the building blocks within the Main.elm modules in the 2 variants:
 
-- the update function has about 30-35% more lines of code in the nested setup, compared to flat setup
-- the view function has about 40% more lines of code in the nested setup
+- the `update` function has about 30-35% more lines of code in the nested setup, compared to flat setup
+- the `view` function has about 40% more lines of code in the nested setup
+
 
 ## In a flat setup, the code is much easier to read and to debug
+
 In the flat setup, most of the code in our Main.elm module is static.  
 The key blocks of code relevant in the programs lifecycle, where most of the "action" takes place, tends to be in the `update` and `view` functions. These are much more compact and readable in the flat setup.
