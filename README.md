@@ -10,7 +10,7 @@ The example folder contains the following examples:
 - flat example: using an extraction without internal state management
 
 ## Comparison flat and nested
-A rough comparison of the two extraction method reveals:
+A rough comparison of the two extraction methods reveals:
 - In total size (lines of code - including comments and docs) of the *Main.elm* module, there is not much difference between the nested and flat extraction.
 - The nested *Dropdown.elm* has a lot more lines of code than in the flat variant: 141 vs 96, which is over 40% more code.
 
