@@ -1,5 +1,5 @@
 module Nested.Dropdown exposing 
-    (Config, Model, init, selectedFrom, openState, Msg(..), update, view)
+    (Context, Model, init, selectedFrom, openState, Msg(..), update, view)
 {- a Dropdown component that manages its own state
 -}
 import Html exposing (..)
@@ -29,12 +29,12 @@ init =
         , isOpen = False
         }
 
-{- Config type alias
+{- Context type alias
 (this is stuff not managed by the dropdown, but passed in from parent)
 kind of like props (including callbacks) in react
-in our dropdown config is the default text, displayed if no item is selected
+in our dropdown context is the default text, displayed if no item is selected
 -} 
-type alias Config = String
+type alias Context = String
 
 -- helpers to enable reading from Model
 selectedFrom : Model -> Maybe String
@@ -83,12 +83,12 @@ update msg (Model model) =
 
 
 
-view : Config -> Model -> List String -> Html Msg
-view config (Model model) data =
+view : Context -> Model -> List String -> Html Msg
+view context (Model model) data =
     let
         mainText =
             model.selectedItem
-            |> Maybe.withDefault config
+            |> Maybe.withDefault context
 
         displayStyle =
             if model.isOpen then
