@@ -39,8 +39,8 @@ type OpenDropDown =
 
 init : ( Model, Cmd Msg )
 init =
-    { country = Dropdown.init
-    , city = Dropdown.init
+    { country = Nothing
+    , city = Nothing
     , openDropDown = AllClosed
     } ! []
 
@@ -68,15 +68,15 @@ countries =
 countryConfig : Dropdown.Config Msg
 countryConfig =
     { defaultText = "-- pick a country --"
-    , clickedMsg : Toggle CountryDropDown 
-    , itemPickedMsg : CountryPicked
+    , clickedMsg = Toggle CountryDropDown 
+    , itemPickedMsg = CountryPicked
     }
 
 cityConfig : Dropdown.Config Msg
 cityConfig =
     { defaultText = "-- pick a city --"
-    , clickedMsg : Toggle CityDropDown 
-    , itemPickedMsg : CityPicked
+    , clickedMsg = Toggle CityDropDown 
+    , itemPickedMsg = CityPicked
     }
 
 
@@ -95,10 +95,17 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
     Toggle dropdown ->
-        if model.openDropDown == dropdown then
-            AllClosed
-        else
-            dropdown
+        let
+            newOpenDropDown =
+                if model.openDropDown == dropdown then
+                    AllClosed
+                else
+                    dropdown
+
+        in
+            { model 
+            | openDropDown = newOpenDropDown
+            } ! []        
 
     CountryPicked pickedCountry ->
         let
@@ -117,7 +124,7 @@ update msg model =
 
     CityPicked pickedCity ->
         { model
-        , city = Just pickedCity
+        | city = Just pickedCity
         , openDropDown = AllClosed
         } ! []
 
@@ -151,14 +158,12 @@ view : Model -> Html Msg
 view model =
     let
         countryContext =
-            { selectedItem = 
-                model.country |> Maybe.withDefault countryConfig.defaultText
+            { selectedItem = model.country
             , isOpen = model.openDropDown == CountryDropDown
             }
 
         cityContext =
-            { selectedItem = 
-                model.city |> Maybe.withDefault cityConfig.defaultText
+            { selectedItem = model.city
             , isOpen = model.openDropDown == CityDropDown
             }
 
@@ -169,6 +174,6 @@ view model =
 
     in
         div [ style Styles.mainContainer ]
-            [ Dropdown.view countryConfig countryContext model.country countries
-            , Dropdown.view cityConfig cityContext model.city cities
+            [ Dropdown.view countryConfig countryContext countries
+            , Dropdown.view cityConfig cityContext cities
             ]

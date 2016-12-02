@@ -38,12 +38,12 @@ type alias Config msg =
 
 
 
-view : Config msg -> Context -> Model -> List String -> Html msg
+view : Config msg -> Context -> List String -> Html msg
 view config context data =
     let
         mainText =
             context.selectedItem
-            |> Maybe.withDefault context.defaultText
+            |> Maybe.withDefault config.defaultText
 
         displayStyle =
             if context.isOpen then
@@ -76,8 +76,8 @@ view config context data =
             ]
             
     
-viewItem : Context msg -> String -> Html msg
-viewItem context item =
+viewItem : Config msg -> String -> Html msg
+viewItem config item =
     li 
         [ style Styles.dropdownListItem
         , onClick <| config.itemPickedMsg item
