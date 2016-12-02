@@ -1,15 +1,16 @@
 {- two dropdowns
 with open/ close state
 and blur when clicked outside
+using a nested approach
+importing a module that manages its own state
 -}
 import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onWithOptions)
 import Dict exposing (Dict)
 import Json.Decode as Json
 import Mouse exposing (Position)
 
-import Styles
+import Styles.Styles as Styles
+import Dropdown
 
 main =
   Html.program
@@ -24,37 +25,34 @@ main =
 
 -- our main model, which will change as we use the app
 type alias Model =
-    { carBrand : Maybe CarBrand
-    , carModel : Maybe CarModel
-    , isOpen : OpenState
+    { country : Dropdown.Model
+    , city : Dropdown.Model
     }
 
-type OpenState = AllClosed | BrandOpen | CarModelOpen
-
 -- simple types so we can read the code better
-type alias CarBrand = String
-type alias CarModel = String
+type alias Country = String
+type alias City = String
 
 -- global constants/ config
-allCars : Dict CarBrand (List CarModel)
-allCars =
+allCities : Dict Country (List City)
+allCities =
     Dict.fromList
-        [ ("Audi",["A3","A4","A5","TT"])
-        , ("BMW",["316i","525i","X3"])
-        , ("Chevrolet",["Bolt","Camaro","Spark","Volt"])
-        , ("Ford",["Focus","Kia","Mondeo"])
+        [ ("Spain",["Barcelona","Madrid","Alicante","Valencia"])
+        , ("Germany",["Berlin","München","Bonn","Leipzig"])
+        , ("France",["Paris","Lyon","Marseille","Dijon"])
+        , ("Italy",["Florence","Rome","Milan"])
         ]
 
-carBrands : List CarBrand
-carBrands = 
-    Dict.keys allCars
+countries : List Country
+countries = 
+    Dict.keys allCities
+
 
 
 init : ( Model, Cmd Msg )
 init =
-    { carBrand = Nothing
-    , carModel = Nothing
-    , isOpen = AllClosed
+    { country = Dropdown.init
+    , city = Dropdown.init
     } ! []
 
 
@@ -62,56 +60,67 @@ init =
 -- UPDATE
 
 
-type Msg
-    = BrandPicked CarBrand
-    | CarModelPicked CarModel
-    | BrandToggled
-    | CarModelToggled
+type Msg =
+    CountryMsg Dropdown.Msg
+    | CityMsg Dropdown.Msg
     | Blur Position
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
-    BrandPicked carBrand ->
-        { model 
-        | carBrand = Just carBrand
-        , carModel =
-            if model.carBrand /= Just carBrand then
-                Nothing
-            else
-                model.carModel
-        , isOpen = AllClosed
-        } ! []
+    CountryMsg countryMsg ->
+        let
+            oldCountry = 
+                Dropdown.selectedFrom model.country
+            
+            (newCountry, newSelectedCountry) =
+                Dropdown.update countryMsg model.country
 
-    CarModelPicked carModel ->
-        { model 
-        | carModel = Just carModel
-        , isOpen = AllClosed
-        } ! []
+            (newCity, _) =
+                if newSelectedCountry /= oldCountry then
+                    Dropdown.update (Dropdown.ItemPicked Nothing) model.city
+                else
+                    (model.city, Nothing)
 
-    BrandToggled ->
-        { model 
-        | isOpen = 
-            case model.isOpen of
-                BrandOpen -> 
-                    AllClosed
-                _ -> 
-                    BrandOpen
-        } ! []
+            (closedNewCity, _) =
+                Dropdown.update (Dropdown.SetOpenState False) model.city
 
-    CarModelToggled ->
-        { model 
-        | isOpen = 
-            case model.isOpen of
-                CarModelOpen -> 
-                    AllClosed
-                _ -> 
-                    CarModelOpen
-        } ! []
+
+        in
+            { model 
+            | country = newCountry
+            , city = closedNewCity
+            } ! []
+
+    CityMsg cityMsg ->
+        let
+            (newCity, _) =
+                Dropdown.update cityMsg model.city
+
+            (closedCountry, _) =
+                Dropdown.update (Dropdown.SetOpenState False) model.country
+
+        in
+            { model
+            | country = closedCountry
+            , city = newCity
+            } ! []
+
 
     Blur _ ->
-        { model | isOpen = AllClosed } ! []
+        let
+            (closedCountry, _) =
+                Dropdown.update (Dropdown.SetOpenState False) model.country
+
+            (closedCity, _) =
+                Dropdown.update (Dropdown.SetOpenState False) model.city
+
+        in
+            { model
+            | country = closedCountry
+            , city = closedCity
+            } ! []
 
 
 
@@ -120,11 +129,10 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    case model.isOpen of
-        AllClosed ->
-            Sub.none
-        _ ->
-            Mouse.clicks Blur
+    if Dropdown.openState model.country || Dropdown.openState model.city then
+        Sub.none
+    else
+        Mouse.clicks Blur
 
 
 
@@ -136,95 +144,33 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     let
-        brandText =
-            model.carBrand
-            |> Maybe.withDefault "-- pick a car brand --" 
+        countryText =
+            Dropdown.selectedFrom model.country
+            |> Maybe.withDefault "-- pick a country --" 
 
-        carModelText =
-            model.carModel
-            |> Maybe.withDefault "-- pick a model --" 
+        cityText =
+            Dropdown.selectedFrom model.city
+            |> Maybe.withDefault "-- pick a city --" 
 
-        brandDisplayStyle =
-            case model.isOpen of
-                BrandOpen ->
-                    ("display", "block")
-                _ ->
-                    ("display", "none")
+        countryDisplayStyle =
+            if Dropdown.openState model.country then
+                ("display", "block")
+            else
+                ("display", "none")
 
-        carModelDisplayStyle =
-            case model.isOpen of
-                CarModelOpen ->
-                    ("display", "block")
-                _ ->
-                    ("display", "none")
+        cityDisplayStyle =
+            if Dropdown.openState model.city then
+                ("display", "block")
+            else
+                ("display", "none")
 
-        carModels =
-            model.carBrand
-            |> Maybe.andThen (\b -> Dict.get b allCars)
+        cities =
+            Dropdown.selectedFrom model.country
+            |> Maybe.andThen (\c -> Dict.get c allCities)
             |> Maybe.withDefault []
-
-        carModelsAttr =
-            case carModels of
-                [] -> 
-                    [ style <| Styles.dropdownDisabled ++ Styles.dropdownInput
-                    ] 
-
-                _ ->
-                    [ style Styles.dropdownInput
-                    , onClick CarModelToggled 
-                    ] 
 
     in
         div [ style Styles.mainContainer ]
-            [ div 
-                [ style Styles.dropdownContainer ]
-                [ p 
-                    [ style Styles.dropdownInput
-                    , onClick BrandToggled 
-                    ] 
-                    [ span [ style Styles.dropdownText ] [ text <| brandText ] 
-                    , span [] [ text " ▾" ]
-                    ]
-                , ul 
-                    [ style <| brandDisplayStyle :: Styles.dropdownList ]
-                    (List.map viewCarBrand carBrands)
-                ]
-            , div 
-                [ style Styles.dropdownContainer ]
-                [ p 
-                    carModelsAttr
-                    [ span [ style Styles.dropdownText ] [ text <| carModelText ] 
-                    , span [] [ text "▾" ]
-                    ]
-                , ul 
-                    [ style <| carModelDisplayStyle :: Styles.dropdownList ]
-                    (List.map viewCarModel carModels)
-                ]
+            [ Dropdown.view countryText model.country countries
+            , Dropdown.view cityText model.city cities
             ]
-    
-viewCarBrand : CarBrand -> Html Msg
-viewCarBrand carBrand =
-    li 
-        [ style Styles.dropdownListItem
-        , onClick <| BrandPicked carBrand 
-        ]
-        [ text carBrand ]
-
-viewCarModel : CarModel -> Html Msg
-viewCarModel carModel =
-    li 
-        [ style Styles.dropdownListItem
-        , onClick <| CarModelPicked carModel 
-        ]
-        [ text carModel ]
-
-
--- helper to cancel click anywhere
-onClick : msg -> Attribute msg
-onClick message =
-    onWithOptions 
-        "click" 
-        { stopPropagation = True
-        , preventDefault = False
-        }
-        (Json.succeed message)
