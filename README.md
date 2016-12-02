@@ -1,6 +1,6 @@
 # Example of a dropdown menu
 
-Using a flat model to demonstrate how to scale.
+Comparing a flat versus nested (component) setup.
 
 A extensive explanation and comparison of the examples can be found here on Medium.com
 
@@ -9,13 +9,12 @@ The example folder contains the following examples:
 - nested example: using an extracted dropdown (component) - which manages its own state
 - flat example: using an extraction without internal state management
 
-## comparison of flat and nested
+## Comparison flat and nested
 A rough comparison of the two extraction method reveals:
+- In total size (lines of code - including comments and docs) of the *Main.elm* module, there is not much difference between the nested and flat extraction.
+- The nested *Dropdown.elm* has a lot more lines of code than in the flat variant: 141 vs 96, which is over 40% more code.
 
-In total size (lines of code - including comments and docs) of the *Main.elm* module, there is not much difference between the nested and flat extraction.
-
-The nested *Dropdown.elm* has a lot more lines of code than in the flat variant: 141 vs 96, which is over 40% more code.
-In itself, the implications of this are small. The reason for extracting the dropdown is to make the overall structure, and in particular the main module less complex. So the size of the extracted module is not very important.
+In itself, the implications of this are small. The reason for extracting the dropdown is to make the overall structure,  in particular the main module less complex. So the size of the extracted module is not very important.
 
 The *key differences* become clear when we zoom in on the building blocks within the Main.elm modules in the 2 variants:
 
