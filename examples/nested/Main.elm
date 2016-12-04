@@ -108,7 +108,6 @@ update msg model =
             , city = newCity
             } ! []
 
-
     Blur _ ->
         let
             (closedCountry, _) =
