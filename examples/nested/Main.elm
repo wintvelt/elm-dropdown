@@ -22,6 +22,7 @@ main =
     }
 
 
+
 -- MODEL
 
 -- our main model, which will change as we use the app
@@ -47,7 +48,6 @@ allCities =
 countries : List Country
 countries = 
     Dict.keys allCities
-
 
 
 init : ( Model, Cmd Msg )
@@ -136,9 +136,7 @@ subscriptions model =
 
 
 
-
 -- VIEW
-
 
 
 view : Model -> Html Msg
@@ -151,18 +149,6 @@ view model =
         cityText =
             Dropdown.selectedFrom model.city
             |> Maybe.withDefault "-- pick a city --" 
-
-        countryDisplayStyle =
-            if Dropdown.openState model.country then
-                ("display", "block")
-            else
-                ("display", "none")
-
-        cityDisplayStyle =
-            if Dropdown.openState model.city then
-                ("display", "block")
-            else
-                ("display", "none")
 
         cities =
             Dropdown.selectedFrom model.country

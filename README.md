@@ -11,15 +11,14 @@ The example folder contains the following examples:
 
 ## Comparison flat and nested
 A rough comparison of the two extraction methods reveals:
-- In total size (lines of code - including comments and docs) of the *Main.elm* module, there is not much difference between the nested and flat extraction.
+- In total size (lines of code - including comments and docs) of the *Main.elm* module, there is not much difference between the nested and flat extraction. The flat version is slightly larger.
 - The nested *Dropdown.elm* has a lot more lines of code than in the flat variant: 141 vs 96, which is over 40% more code.
 
 In itself, the implications of this are small. The reason for extracting the dropdown is to make the overall structure,  in particular the main module less complex. So the size of the extracted module is not very important.
 
-The *key differences* become clear when we zoom in on the building blocks within the Main.elm modules in the 2 variants:
+The *key difference* becomes clear when we zoom in on the building blocks within the Main.elm modules in the 2 variants:
 
 - the `update` function has about 30-35% more lines of code in the nested setup, compared to flat setup
-- the `view` function has about 40% more lines of code in the nested setup
 
 
 ## In a flat setup, the code is much easier to read and to debug

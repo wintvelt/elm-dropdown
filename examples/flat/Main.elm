@@ -22,6 +22,7 @@ main =
     }
 
 
+
 -- MODEL
 
 -- our main model, which will change as we use the app
@@ -43,8 +44,6 @@ init =
     , city = Nothing
     , openDropDown = AllClosed
     } ! []
-
-
 
 -- simple types so we can read the code better
 type alias Country = String
@@ -149,9 +148,7 @@ subscriptions model =
 
 
 
-
 -- VIEW
-
 
 
 view : Model -> Html Msg
