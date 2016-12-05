@@ -8,7 +8,7 @@ import Html exposing (..)
 import Html.Attributes exposing (style)
 import Dict exposing (Dict)
 import Json.Decode as Json
-import Mouse exposing (Position)
+import Mouse
 
 import Styles.Styles as Styles
 import Nested.Dropdown as Dropdown
@@ -64,7 +64,7 @@ init =
 type Msg =
     CountryMsg Dropdown.Msg
     | CityMsg Dropdown.Msg
-    | Blur Position
+    | Blur
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -108,7 +108,7 @@ update msg model =
             , city = newCity
             } ! []
 
-    Blur _ ->
+    Blur ->
         let
             (closedCountry, _) =
                 Dropdown.update (Dropdown.SetOpenState False) model.country
@@ -130,7 +130,7 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     if Dropdown.openState model.country || Dropdown.openState model.city then
-        Mouse.clicks Blur
+        Mouse.clicks (always Blur)
     else
         Sub.none
 
