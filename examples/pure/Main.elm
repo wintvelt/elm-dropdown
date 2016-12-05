@@ -8,7 +8,7 @@ import Html exposing (..)
 import Html.Attributes exposing (style)
 import Dict exposing (Dict)
 import Json.Decode as Json
-import Mouse exposing (Position)
+import Mouse
 
 import Styles.Styles as Styles
 import Flat.Dropdown as Dropdown
@@ -87,7 +87,7 @@ type Msg =
     Toggle OpenDropDown
     | CountryPicked Country
     | CityPicked City
-    | Blur Position
+    | Blur
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -127,7 +127,7 @@ update msg model =
         , openDropDown = AllClosed
         } ! []
 
-    Blur _ ->
+    Blur ->
         { model
         | openDropDown = AllClosed
         } ! []
@@ -144,7 +144,7 @@ subscriptions model =
             Sub.none
 
         _ ->
-            Mouse.clicks Blur
+            Mouse.clicks (always Blur)
 
 
 
