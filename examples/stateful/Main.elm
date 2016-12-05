@@ -11,7 +11,7 @@ import Json.Decode as Json
 import Mouse
 
 import Styles.Styles as Styles
-import Nested.Dropdown as Dropdown
+import Stateful.Dropdown as Dropdown
 
 main =
   Html.program

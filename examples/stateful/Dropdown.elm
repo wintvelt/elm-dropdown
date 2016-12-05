@@ -1,4 +1,4 @@
-module Nested.Dropdown exposing 
+module Stateful.Dropdown exposing 
     (Context, Model, init, selectedFrom, openState, Msg(..), update, view)
 {- a Dropdown component that manages its own state
 -}

@@ -11,7 +11,7 @@ import Json.Decode as Json
 import Mouse
 
 import Styles.Styles as Styles
-import Flat.Dropdown as Dropdown
+import Pure.Dropdown as Dropdown
 
 main =
   Html.program

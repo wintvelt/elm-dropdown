@@ -1,4 +1,4 @@
-module Flat.Dropdown exposing 
+module Pure.Dropdown exposing 
     (Context, Config, view)
 {- a Dropdown component that manages its own state
 -}
