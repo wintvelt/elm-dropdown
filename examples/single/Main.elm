@@ -7,7 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onWithOptions)
 import Dict exposing (Dict)
 import Json.Decode as Json
-import Mouse exposing (Position)
+import Mouse
 
 import Styles.Styles as Styles
 
@@ -61,7 +61,7 @@ init =
 type Msg
     = CountryPicked Country
     | DropDownClicked
-    | Blur Position
+    | Blur
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -76,7 +76,7 @@ update msg model =
     DropDownClicked ->
         { model | isOpen = not model.isOpen } ! []
 
-    Blur _ ->
+    Blur ->
         { model | isOpen = False } ! []
 
 
@@ -87,7 +87,7 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     if model.isOpen then
-        Mouse.clicks Blur
+        Mouse.clicks (always Blur)
     else
         Sub.none
 
