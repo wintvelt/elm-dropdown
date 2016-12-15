@@ -32,3 +32,7 @@ The key blocks of code relevant in the programs lifecycle, where most of the "ac
 Use `elm reactor` or `elm-live`:
 
 `elm-live examples/pure/Main.elm`
+
+You can also run `elm-live` with `debug`:
+
+`elm-live examples/pure/Main.elm -- --debug`
