@@ -26,3 +26,9 @@ The key blocks of code relevant in the programs lifecycle, where most of the "ac
 
 
 [1]: https://medium.com/@wintvelt/a-reusable-dropdown-in-elm-part-1-d7ac2d106f13
+
+## Run
+
+Use `elm reactor` or `elm-live`:
+
+`elm-live examples/pure/Main.elm`
